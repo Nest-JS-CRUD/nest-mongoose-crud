@@ -1,15 +1,14 @@
-// dto/create-post.dto.ts
 import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
+  Min,
+  IsUrl,
   IsEnum,
   IsArray,
   IsNumber,
+  IsString,
   IsBoolean,
   IsMongoId,
-  IsUrl,
-  Min,
+  IsNotEmpty,
+  IsOptional,
   ValidateNested,
 } from 'class-validator';
 
