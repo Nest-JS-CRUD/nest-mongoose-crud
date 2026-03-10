@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Put,
   Get,
@@ -64,18 +63,8 @@ function applyEndpointDecorators(config?: EndpointConfig) {
     decorators.push(UsePipes(...config.pipes));
   }
 
-  if (config?.dto) {
-    decorators.push(
-      UsePipes(
-        new ValidationPipe({
-          transform: true,
-          whitelist: true,
-          forbidNonWhitelisted: true,
-          ...config.validationOptions,
-        }),
-      ),
-    );
-  }
+  // Note: dto validation should be applied to specific parameters (@Body, @Query, etc.)
+  // not globally to the method, as it can interfere with response serialization
 
   if (config?.status) {
     decorators.push(HttpCode(config.status));
@@ -87,7 +76,7 @@ function applyEndpointDecorators(config?: EndpointConfig) {
 export function createCrudController<T extends Document>(
   config: CrudControllerConfig = {},
 ): Type<any> {
-  class BaseController {
+  abstract class BaseController {
     constructor(protected readonly service: BaseCrudService<T>) {}
 
     @Get()
@@ -97,9 +86,14 @@ export function createCrudController<T extends Document>(
     }
 
     @Get(':id')
-    @applyEndpointDecorators(config.getOne)
     async getOne(@Param('id') id: string, @Query() query: IQuery) {
-      return this.service.findById(id, query);
+      try {
+        const result = await this.service.findById(id, query);
+        console.log({ result });
+        return result;
+      } catch (error) {
+        throw error;
+      }
     }
 
     @Post()
@@ -159,5 +153,5 @@ export function createCrudController<T extends Document>(
     }
   }
 
-  return BaseController;
+  return BaseController as Type<any>;
 }

@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "nest-mongoose-crud": {
+      "signature": "f1db92fefdd8d9e5044246a083995ffc",
+      "file": true
+    }
+  }
+}

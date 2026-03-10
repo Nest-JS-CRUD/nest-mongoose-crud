@@ -1,12 +1,16 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
+  Type,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { createCrudController } from 'utils/create-crud.controller.utils';
+
+import { createCrudController } from 'nest-mongoose-crud'; // Adjust path as needed
+
+// import { createCrudController } from 'utils/create-crud.controller.utils';
+
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -16,7 +20,7 @@ import { LogRequest1Guard } from './guards/log-request-1/log-request-1.guard';
 import { CreatePostUpdated } from './dto/create-post-update.dto';
 import { LogRequest2Guard } from './guards/log-request-1/log-request-2.guard';
 
-const PostControllerBase = createCrudController({
+const BaseController: Type<any> = createCrudController({
   create: {
     dto: CreatePostDto,
     interceptors: [LogRequest1Interceptor, LogRequest2Interceptor],
@@ -33,14 +37,9 @@ const PostControllerBase = createCrudController({
 });
 
 @Controller('posts')
-export class PostController extends PostControllerBase {
+export class PostController extends BaseController {
   constructor(private service: PostService) {
     super(service); // Pass service to parent constructor
-  }
-
-  @Get()
-  findAll() {
-    return this.service.findAllUpdate();
   }
 
   @Post()
@@ -52,6 +51,6 @@ export class PostController extends PostControllerBase {
     }),
   )
   create(@Body() dto: CreatePostUpdated) {
-    return this.service.createOneUpdate(dto);
+    return this.service.create(dto);
   }
 }

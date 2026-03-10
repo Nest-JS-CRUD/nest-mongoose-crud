@@ -4,8 +4,8 @@
     "module": "commonjs",
     "lib": ["ES2020"],
     "declaration": true,
-    "outDir": "../test-project/package/dist",
-    "rootDir": "../test-project/package/src",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -14,12 +14,10 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["../test-project/package/src/**/*"],
-  "exclude": [
-    "../test-project/package/node_modules",
-    "../test-project/package/dist",
-    "../test-project/package/**/*.test.ts"
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

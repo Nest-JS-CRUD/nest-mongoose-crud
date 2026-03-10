@@ -1,4 +1,3 @@
-// base/base-crud.service.ts
 import { Model, Document } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 import APIFeatures from './apiFeatures.utils';
@@ -98,19 +97,6 @@ export abstract class BaseCrudService<
   }
 
   /**
-   * Find documents by custom filter
-   */
-  async find(filter: any = {}, query: Partial<IQuery> = {}) {
-    const payload = new APIFeatures(this.model.find(filter), query)
-      .filter()
-      .populate()
-      .sort()
-      .limitFields();
-
-    return await payload.query;
-  }
-
-  /**
    * Find one document by custom filter
    */
   async findOneBy(filter: any = {}, query: Partial<IQuery> = {}) {
@@ -131,7 +117,7 @@ export abstract class BaseCrudService<
   /**
    * Find document by ID without any query processing
    */
-  async findById(id: string, query: IQuery): Promise<T | null> {
+  async findById(id: string, query: IQuery) {
     const payload = new APIFeatures(this.model.find({ _id: id }), query)
       .filter()
       .populate()
@@ -139,13 +125,11 @@ export abstract class BaseCrudService<
 
     const [result] = await payload.query;
 
-    console.log('findById result:', result);
-
     if (!result) {
       throw new NotFoundException('Document not found with that ID');
     }
 
-    return result;
+    return { status: 'success', data: result };
   }
 
   /**
