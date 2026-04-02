@@ -86,6 +86,7 @@ export function createCrudController<T extends Document>(
     }
 
     @Get(':id')
+    @applyEndpointDecorators(config.getOne)
     async getOne(@Param('id') id: string, @Query() query: IQuery) {
       try {
         const result = await this.service.findById(id, query);
