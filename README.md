@@ -11,6 +11,21 @@ behaviour.
 
 ---
 
+## Table of Contents
+
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Querying](#-querying)
+- [Controller Configuration](#-controller-configuration)
+- [Override example](#override-example)
+- [Additional Utilities](#-additional-utilities)
+- [Advanced Tips](#-advanced-tips)
+- [Development & Testing](#-development--testing)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
 ## 📦 Installation
 
 ```bash
@@ -617,6 +632,13 @@ npm run start:dev
 
 You can also link the package locally with `npm link` (see the script
 in the top‑level `package.json`).
+
+---
+
+## 🤝 Contributing
+
+See the contribution workflow and PR checklist in
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ---
 
