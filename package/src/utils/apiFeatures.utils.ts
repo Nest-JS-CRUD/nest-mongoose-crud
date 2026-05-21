@@ -79,6 +79,7 @@ class APIFeatures<T extends Document> {
       'search',
       'populate',
     ];
+
     excludedFields.forEach((el) => delete queryObj[el]);
 
     const filter = Object.entries(queryObj).reduce(
@@ -113,6 +114,13 @@ class APIFeatures<T extends Document> {
             // Type-safe assignment
             (acc[field] as MongoComparisonOperators)[mongoOperator] = value;
           }
+        } else if (key.includes('ne')) {
+          const match = key.match(/\[(.*?)\]/);
+          const operator = match ? match[1] : null;
+
+          const [field] = key.split(`[${operator}]`);
+
+          acc[field] = { $nin: value.split(',') };
         } else {
           // Handle regular fields with $in operator
           acc[key] = { $in: value.split(',') };
