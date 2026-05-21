@@ -6,7 +6,6 @@ export class LogRequest1Guard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    console.log('Test guard');
     return true;
   }
 }

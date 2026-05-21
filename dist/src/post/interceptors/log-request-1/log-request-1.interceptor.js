@@ -11,7 +11,6 @@ const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
 let LogRequest1Interceptor = class LogRequest1Interceptor {
     intercept(context, next) {
-        console.log('Interceptor 1');
         return next.handle().pipe((0, operators_1.map)((response) => {
             return {
                 ...response,

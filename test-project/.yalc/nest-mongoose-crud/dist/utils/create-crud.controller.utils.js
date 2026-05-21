@@ -43,7 +43,6 @@ function createCrudController(config = {}) {
         async getOne(id, query) {
             try {
                 const result = await this.service.findById(id, query);
-                console.log({ result });
                 return result;
             }
             catch (error) {

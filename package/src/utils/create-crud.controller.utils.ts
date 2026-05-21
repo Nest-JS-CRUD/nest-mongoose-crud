@@ -90,7 +90,6 @@ export function createCrudController<T extends Document>(
     async getOne(@Param('id') id: string, @Query() query: IQuery) {
       try {
         const result = await this.service.findById(id, query);
-        console.log({ result });
         return result;
       } catch (error) {
         throw error;

@@ -139,8 +139,6 @@ export abstract class BaseCrudService<
 
     const [result] = await payload.query;
 
-    console.log('findById result:', result);
-
     if (!result) {
       throw new NotFoundException('Document not found with that ID');
     }

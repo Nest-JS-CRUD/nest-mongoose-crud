@@ -10,7 +10,6 @@ exports.LogRequest2Interceptor = void 0;
 const common_1 = require("@nestjs/common");
 let LogRequest2Interceptor = class LogRequest2Interceptor {
     intercept(context, next) {
-        console.log('Interceptor 2');
         return next.handle();
     }
 };

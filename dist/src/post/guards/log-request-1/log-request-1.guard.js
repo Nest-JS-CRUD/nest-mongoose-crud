@@ -10,7 +10,6 @@ exports.LogRequest1Guard = void 0;
 const common_1 = require("@nestjs/common");
 let LogRequest1Guard = class LogRequest1Guard {
     canActivate(context) {
-        console.log('Test guard');
         return true;
     }
 };

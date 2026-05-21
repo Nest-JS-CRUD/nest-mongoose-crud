@@ -9,8 +9,6 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class LogRequest2Interceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('Interceptor 2');
-
     return next.handle();
   }
 }
