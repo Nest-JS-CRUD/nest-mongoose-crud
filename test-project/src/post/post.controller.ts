@@ -33,6 +33,7 @@ const BaseController: Type<any> = createCrudController({
   getAll: {
     guards: [LogRequest1Guard, LogRequest2Guard],
     interceptors: [LogRequest1Interceptor, LogRequest2Interceptor],
+    enabled: false,
   },
 });
 
