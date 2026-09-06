@@ -8,13 +8,24 @@ export abstract class BaseCrudService<
   CreateDto = any, // Make CreateDto optional with default 'any'
   UpdateDto = any, // Make UpdateDto optional with default 'any'
 > {
+  /**
+   * Optional allow-list for `?fields=` selection.
+   * When set, only listed field names can be selected or excluded.
+   * When unset, field selection behaves as before (no filtering).
+   */
+  protected allowedFields?: string[];
+
   constructor(protected readonly model: Model<T>) {}
 
   /**
    * Get all documents with filtering, pagination, sorting
    */
   async findAll(query: IQuery) {
-    const payload = new APIFeatures(this.model.find(), query)
+    const payload = new APIFeatures(
+      this.model.find(),
+      query,
+      this.allowedFields,
+    )
       .filter()
       .search()
       .populate()
@@ -45,7 +56,11 @@ export abstract class BaseCrudService<
    * Get a single document by ID
    */
   async findOne(id: string, query: Partial<IQuery> = {}) {
-    const payload = new APIFeatures(this.model.find({ _id: id }), query)
+    const payload = new APIFeatures(
+      this.model.find({ _id: id }),
+      query,
+      this.allowedFields,
+    )
       .filter()
       .populate();
 
@@ -100,7 +115,11 @@ export abstract class BaseCrudService<
    * Find one document by custom filter
    */
   async findOneBy(filter: any = {}, query: Partial<IQuery> = {}) {
-    const payload = new APIFeatures(this.model.find(filter), query)
+    const payload = new APIFeatures(
+      this.model.find(filter),
+      query,
+      this.allowedFields,
+    )
       .filter()
       .populate()
       .limitFields();
@@ -118,7 +137,11 @@ export abstract class BaseCrudService<
    * Find document by ID without any query processing
    */
   async findById(id: string, query: IQuery) {
-    const payload = new APIFeatures(this.model.find({ _id: id }), query)
+    const payload = new APIFeatures(
+      this.model.find({ _id: id }),
+      query,
+      this.allowedFields,
+    )
       .filter()
       .populate()
       .limitFields();

@@ -62,10 +62,16 @@ class APIFeatures<T extends Document> {
   query: Query<T[], T>;
   queryString: IQuery;
   filterObject: IFilterObject = {};
+  allowedFields?: string[];
 
-  constructor(query: Query<T[], T>, queryString: IQuery) {
+  constructor(
+    query: Query<T[], T>,
+    queryString: IQuery,
+    allowedFields?: string[],
+  ) {
     this.query = query;
     this.queryString = queryString;
+    this.allowedFields = allowedFields;
   }
 
   filter() {
@@ -141,8 +147,26 @@ class APIFeatures<T extends Document> {
 
   limitFields() {
     if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(',').join(' ');
-      this.query = this.query.select(fields) as unknown as Query<T[], T>;
+      let requested = this.queryString.fields
+        .split(',')
+        .map((field) => field.trim())
+        .filter(Boolean);
+
+      if (this.allowedFields?.length) {
+        const allowSet = new Set(this.allowedFields);
+        requested = requested.filter((field) => {
+          const name = field.startsWith('-') ? field.slice(1) : field;
+          return allowSet.has(name);
+        });
+      }
+
+      if (requested.length) {
+        this.query = this.query.select(
+          requested.join(' '),
+        ) as unknown as Query<T[], T>;
+      } else {
+        this.query = this.query.select('-v') as unknown as Query<T[], T>;
+      }
     } else {
       this.query = this.query.select('-v') as unknown as Query<T[], T>;
     }
