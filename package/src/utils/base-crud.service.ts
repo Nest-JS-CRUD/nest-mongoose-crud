@@ -2,6 +2,17 @@ import { Model, Document } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 import APIFeatures from './apiFeatures.utils';
 import IQuery from './interfaces/query.interface';
+import { EndpointConfig } from './create-crud.controller.utils';
+
+function createNotFoundException(message: string): NotFoundException {
+  const exception = new NotFoundException(message);
+
+  // When this package is linked locally, it can resolve a different
+  // @nestjs/common instance than the host app. Nest then treats HttpException
+  // subclasses as unknown errors, but still recognizes http-errors shaped
+  // errors via a top-level statusCode.
+  return Object.assign(exception, { statusCode: exception.getStatus() });
+}
 
 export abstract class BaseCrudService<
   T extends Document,
@@ -20,7 +31,11 @@ export abstract class BaseCrudService<
   /**
    * Get all documents with filtering, pagination, sorting
    */
-  async findAll(query: IQuery) {
+  async findAll(query: IQuery, config: EndpointConfig = {}) {
+    if (config.enabled === false) {
+      throw createNotFoundException('Endpoint disabled');
+    }
+
     const payload = new APIFeatures(
       this.model.find(),
       query,
@@ -55,7 +70,11 @@ export abstract class BaseCrudService<
   /**
    * Get a single document by ID
    */
-  async findOne(id: string, query: Partial<IQuery> = {}) {
+  async findOne(
+    id: string,
+    query: Partial<IQuery> = {},
+    config: EndpointConfig = {},
+  ) {
     const payload = new APIFeatures(
       this.model.find({ _id: id }),
       query,
@@ -67,7 +86,7 @@ export abstract class BaseCrudService<
     const [result] = await payload.query;
 
     if (!result) {
-      throw new NotFoundException(`Document with ID ${id} not found`);
+      throw createNotFoundException(`Document with ID ${id} not found`);
     }
 
     return { status: 'success', data: result };
@@ -76,7 +95,7 @@ export abstract class BaseCrudService<
   /**
    * Create a new document using Create DTO (optional)
    */
-  async createOne(createDto: CreateDto) {
+  async createOne(createDto: CreateDto, config: EndpointConfig = {}) {
     const result = await this.model.create(createDto as any);
     return { status: 'success', data: result };
   }
@@ -84,11 +103,15 @@ export abstract class BaseCrudService<
   /**
    * Update a document by ID using Update DTO (optional)
    */
-  async updateOne(id: string, updateDto: UpdateDto) {
+  async updateOne(
+    id: string,
+    updateDto: UpdateDto,
+    config: EndpointConfig = {},
+  ) {
     const data = await this.model.findById(id);
 
     if (!data) {
-      throw new NotFoundException(`Document with ID ${id} not found`);
+      throw createNotFoundException(`Document with ID ${id} not found`);
     }
 
     await this.model.updateOne({ _id: id }, updateDto as any);
@@ -100,11 +123,11 @@ export abstract class BaseCrudService<
   /**
    * Delete a document by ID
    */
-  async deleteOne(id: string) {
+  async deleteOne(id: string, config: EndpointConfig = {}) {
     const data = await this.model.findById(id);
 
     if (!data) {
-      throw new NotFoundException(`Document with ID ${id} not found`);
+      throw createNotFoundException(`Document with ID ${id} not found`);
     }
 
     await this.model.findByIdAndDelete(id);
@@ -114,7 +137,11 @@ export abstract class BaseCrudService<
   /**
    * Find one document by custom filter
    */
-  async findOneBy(filter: any = {}, query: Partial<IQuery> = {}) {
+  async findOneBy(
+    filter: any = {},
+    query: Partial<IQuery> = {},
+    config: EndpointConfig = {},
+  ) {
     const payload = new APIFeatures(
       this.model.find(filter),
       query,
@@ -126,17 +153,13 @@ export abstract class BaseCrudService<
 
     const result = await payload.query;
 
-    if (!result) {
-      throw new NotFoundException('Document not found with the given filter');
-    }
-
     return result;
   }
 
   /**
    * Find document by ID without any query processing
    */
-  async findById(id: string, query: IQuery) {
+  async findById(id: string, query: IQuery, config: EndpointConfig = {}) {
     const payload = new APIFeatures(
       this.model.find({ _id: id }),
       query,
@@ -149,7 +172,7 @@ export abstract class BaseCrudService<
     const [result] = await payload.query;
 
     if (!result) {
-      throw new NotFoundException('Document not found with that ID');
+      throw createNotFoundException('Document not found with that ID');
     }
 
     return { status: 'success', data: result };

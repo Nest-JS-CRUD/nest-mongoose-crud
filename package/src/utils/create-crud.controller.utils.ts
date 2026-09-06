@@ -73,6 +73,10 @@ function applyEndpointDecorators(config?: EndpointConfig) {
   return decorators.length ? applyDecorators(...decorators) : () => {};
 }
 
+// endpoint enabled/disabled check is handled by the service; controller
+// forwards the endpoint config to service methods so the service may throw
+// a 404 when an endpoint is explicitly disabled.
+
 export function createCrudController<T extends Document>(
   config: CrudControllerConfig = {},
 ): Type<any> {
@@ -82,18 +86,14 @@ export function createCrudController<T extends Document>(
     @Get()
     @applyEndpointDecorators(config.getAll)
     async findAll(@Query() query: IQuery) {
-      return this.service.findAll(query);
+      return this.service.findAll(query, config.getAll);
     }
 
     @Get(':id')
     @applyEndpointDecorators(config.getOne)
     async getOne(@Param('id') id: string, @Query() query: IQuery) {
-      try {
-        const result = await this.service.findById(id, query);
-        return result;
-      } catch (error) {
-        throw error;
-      }
+      const result = await this.service.findById(id, query, config.getOne);
+      return result;
     }
 
     @Post()
@@ -109,7 +109,7 @@ export function createCrudController<T extends Document>(
       )
       payload: any,
     ) {
-      return this.service.createOne(payload);
+      return this.service.createOne(payload, config.create);
     }
 
     @Put(':id')
@@ -126,7 +126,7 @@ export function createCrudController<T extends Document>(
       )
       payload: any,
     ) {
-      return this.service.updateOne(id, payload);
+      return this.service.updateOne(id, payload, config.update);
     }
 
     @Patch(':id')
@@ -143,13 +143,13 @@ export function createCrudController<T extends Document>(
       )
       payload: any,
     ) {
-      return this.service.updateOne(id, payload);
+      return this.service.updateOne(id, payload, config.update);
     }
 
     @Delete(':id')
     @applyEndpointDecorators(config.delete)
     async delete(@Param('id') id: string) {
-      return this.service.deleteOne(id);
+      return this.service.deleteOne(id, config.delete);
     }
   }
 

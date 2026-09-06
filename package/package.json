@@ -1,6 +1,6 @@
 {
   "name": "nest-mongoose-crud",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A reusable handler factory utility for NestJS and Mongoose projects",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "link:test-project": "sh ./scripts/link-test-project.sh",
     "test": "jest",
     "prepare": "npm run build",
     "prepublish": "npm run build"

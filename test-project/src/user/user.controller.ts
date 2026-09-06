@@ -2,7 +2,7 @@ import { Controller, Type } from '@nestjs/common';
 
 import { UserService } from './user.service';
 
-import { createCrudController } from 'nest-mongoose-crud'; // Adjust path as needed
+import { createCrudController } from 'nest-mongoose-crud';
 
 import { CreateUserDto } from './dto/create-user.dto';
 
