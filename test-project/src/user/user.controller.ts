@@ -12,6 +12,7 @@ const BaseCrudController: Type<any> = createCrudController({
   create: { dto: CreateUserDto },
   update: { dto: UpdateUserDto },
   delete: { enabled: false },
+  allowedFields: ['lastLogin', 'username', 'age'],
 });
 
 @Controller('users')
