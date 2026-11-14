@@ -329,17 +329,14 @@ Control which fields are included or excluded in the response to optimize payloa
 
 **Explanation:** Use a comma-separated list of field names. By default, the `__v` field (Mongoose version key) is excluded. Prefix fields with `-` to exclude them instead of including only them. This uses MongoDB's `select()` method.
 
-To prevent clients from selecting sensitive fields (e.g. `password`), set an allow-list on your service via `protected allowedFields`. When set, only listed field names are accepted from `?fields=`; anything else is silently dropped. If every requested field is dropped, the default `-v` selection is used. When unset, field selection is unrestricted (previous behavior).
+To prevent clients from selecting sensitive fields (e.g. `password`), pass an allow-list via `createCrudController({ allowedFields })`. When set, only listed field names are accepted from `?fields=`; anything else is silently dropped. If every requested field is dropped, the default `-v` selection is used. When unset, field selection is unrestricted (previous behavior).
 
 ```ts
-@Injectable()
-export class UserService extends BaseCrudService<UserDocument> {
-  protected allowedFields = ['name', 'email', 'createdAt', 'updatedAt'];
-
-  constructor(@InjectModel(User.name) model: Model<UserDocument>) {
-    super(model);
-  }
-}
+const BaseController = createCrudController({
+  create: { dto: CreateUserDto },
+  update: { dto: UpdateUserDto },
+  allowedFields: ['name', 'email', 'createdAt', 'updatedAt'],
+});
 ```
 
 **Example:** Only return essential fields for a list view.
@@ -457,10 +454,11 @@ interface CrudControllerConfig {
   delete?: EndpointConfig;
   getAll?: EndpointConfig;
   getOne?: EndpointConfig;
+  allowedFields?: string[];
 }
 ```
 
-#### Example – add guards and interceptors to `getAll` and `create`
+#### Example – add guards, interceptors, and a field allow-list
 
 ```ts
 const BaseController = createCrudController({
@@ -469,6 +467,7 @@ const BaseController = createCrudController({
     interceptors: [CacheInterceptor, SomeOtherInterceptor, ...],
   },
   create: { dto: CreatePostDto },
+  allowedFields: ['name', 'email', 'createdAt', 'updatedAt'],
 });
 ```
 
