@@ -29,7 +29,11 @@ export abstract class BaseCrudService<
       throw createNotFoundException('Endpoint disabled');
     }
 
-    const payload = new APIFeatures(this.model.find(), query)
+    const payload = new APIFeatures(
+      this.model.find(),
+      query,
+      config.allowedFields,
+    )
       .filter()
       .search()
       .populate()
@@ -64,7 +68,11 @@ export abstract class BaseCrudService<
     query: Partial<IQuery> = {},
     config: EndpointConfig = {},
   ) {
-    const payload = new APIFeatures(this.model.find({ _id: id }), query)
+    const payload = new APIFeatures(
+      this.model.find({ _id: id }),
+      query,
+      config.allowedFields,
+    )
       .filter()
       .populate();
 
@@ -127,7 +135,11 @@ export abstract class BaseCrudService<
     query: Partial<IQuery> = {},
     config: EndpointConfig = {},
   ) {
-    const payload = new APIFeatures(this.model.find(filter), query)
+    const payload = new APIFeatures(
+      this.model.find(filter),
+      query,
+      config.allowedFields,
+    )
       .filter()
       .populate()
       .limitFields();
@@ -141,7 +153,11 @@ export abstract class BaseCrudService<
    * Find document by ID without any query processing
    */
   async findById(id: string, query: IQuery, config: EndpointConfig = {}) {
-    const payload = new APIFeatures(this.model.find({ _id: id }), query)
+    const payload = new APIFeatures(
+      this.model.find({ _id: id }),
+      query,
+      config.allowedFields,
+    )
       .filter()
       .populate()
       .limitFields();

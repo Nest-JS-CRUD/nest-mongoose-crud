@@ -28,6 +28,7 @@ export interface EndpointConfig {
   pipes?: any[];
   status?: HttpStatus;
   enabled?: boolean;
+  allowedFields?: string[];
   validationOptions?: {
     transform?: boolean;
     whitelist?: boolean;
@@ -41,6 +42,11 @@ export interface CrudControllerConfig {
   delete?: EndpointConfig;
   getAll?: EndpointConfig;
   getOne?: EndpointConfig;
+  /**
+   * Optional allow-list for `?fields=` selection on read endpoints.
+   * When set, only listed field names can be selected or excluded.
+   */
+  allowedFields?: string[];
   global?: {
     guards?: any[];
     interceptors?: any[];
@@ -77,6 +83,16 @@ function applyEndpointDecorators(config?: EndpointConfig) {
 // forwards the endpoint config to service methods so the service may throw
 // a 404 when an endpoint is explicitly disabled.
 
+function withAllowedFields(
+  endpoint: EndpointConfig | undefined,
+  allowedFields?: string[],
+): EndpointConfig {
+  return {
+    ...endpoint,
+    allowedFields: allowedFields ?? endpoint?.allowedFields,
+  };
+}
+
 export function createCrudController<T extends Document>(
   config: CrudControllerConfig = {},
 ): Type<any> {
@@ -86,13 +102,20 @@ export function createCrudController<T extends Document>(
     @Get()
     @applyEndpointDecorators(config.getAll)
     async findAll(@Query() query: IQuery) {
-      return this.service.findAll(query, config.getAll);
+      return this.service.findAll(
+        query,
+        withAllowedFields(config.getAll, config.allowedFields),
+      );
     }
 
     @Get(':id')
     @applyEndpointDecorators(config.getOne)
     async getOne(@Param('id') id: string, @Query() query: IQuery) {
-      const result = await this.service.findById(id, query, config.getOne);
+      const result = await this.service.findById(
+        id,
+        query,
+        withAllowedFields(config.getOne, config.allowedFields),
+      );
       return result;
     }
 
